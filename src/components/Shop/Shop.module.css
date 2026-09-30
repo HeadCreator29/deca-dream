@@ -1,0 +1,287 @@
+/* ============================================
+   DECA DREAM — Shop as Archive
+   Uniform object grid: 5 → 4 → 3.
+   Same size, same ratio. Windows into the archive.
+   ============================================ */
+
+.shop {
+  position: relative;
+  width: 100%;
+  max-width: 1480px;
+  margin: 0 auto;
+  padding: calc(var(--header-height) + 1rem) var(--space-md) var(--space-2xl);
+}
+
+/* --- Archive header: label + object count, nothing else --- */
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.title {
+  font-family: var(--font-family);
+  font-size: 0.65rem;
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.count {
+  font-family: var(--font-family);
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+  white-space: nowrap;
+}
+
+/* --- Mobile: 3 uniform columns, centered whether 1 or 3 --- */
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.8rem;
+  width: 100%;
+}
+
+/* --- Piece: transparent object holder, not a card --- */
+
+.piece {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 0 1 calc((100% - 1.6rem) / 3);
+  min-width: 0;
+  max-width: calc((100% - 1.6rem) / 3);
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--color-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.piece:focus-visible {
+  outline: 1px solid var(--color-text);
+  outline-offset: 4px;
+}
+
+/* --- Visual: no container — the PNG floats directly on the page --- */
+
+.visual {
+  display: block;
+  width: 100%;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  transition: transform var(--transition-fast);
+}
+
+@media (hover: hover) {
+  .piece:hover .visual {
+    transform: scale(1.02);
+  }
+}
+
+.piece:active .visual {
+  transform: scale(1.005);
+}
+
+/* --- Field: invisible 1:1 slot holding the grid space, no box --- */
+
+.field {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 0;
+  background: none;
+}
+
+/* Ghost archive number: oversized, contained, never overflows */
+
+.ghost {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -52%);
+  font-family: var(--font-family);
+  font-weight: 200;
+  font-size: clamp(2.2rem, 11vw, 3.2rem);
+  letter-spacing: 0.04em;
+  line-height: 1;
+  color: rgba(17, 17, 17, 0.09);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* --- Name hidden on Home: PNG only, still clickable ---
+   (a11y name lives on the button aria-label) --- */
+
+.meta {
+  display: none;
+}
+
+.name {
+  font-family: var(--font-family);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-align: center;
+  color: rgba(6, 6, 6, 0.363);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  margin: 10px auto;
+}
+
+/* --- Very small phones: hold 3 columns, tighten air --- */
+
+@media (max-width: 379px) {
+  .shop {
+    padding-left: var(--space-sm);
+    padding-right: var(--space-sm);
+  }
+
+  .grid {
+    gap: 0.6rem;
+  }
+
+  .piece {
+    flex-basis: calc((100% - 1.2rem) / 3);
+    max-width: calc((100% - 1.2rem) / 3);
+  }
+
+  .visual {
+    border-radius: 0;
+    padding: 0px;
+  }
+
+  .field {
+    border-radius: 0;
+  }
+}
+
+/* --- Tablet: 4 uniform columns --- */
+
+@media (min-width: 768px) {
+  .shop {
+    padding: calc(var(--header-height) + 1.5rem) var(--space-xl) var(--space-2xl);
+  }
+
+  .grid {
+    gap: 1.25rem;
+  }
+
+  .piece {
+    flex-basis: calc((100% - 3.75rem) / 4);
+    max-width: calc((100% - 3.75rem) / 4);
+  }
+
+  .visual {
+    border-radius: 0;
+    padding: 0px;
+  }
+
+  .field {
+    border-radius: 0;
+  }
+
+  .ghost {
+    font-size: clamp(3rem, 8vw, 4.5rem);
+  }
+}
+
+/* --- Desktop: 5 uniform columns with air around --- */
+
+@media (min-width: 1100px) {
+  .grid {
+    gap: 2rem;
+  }
+
+  .piece {
+    flex-basis: calc((100% - 8rem) / 5);
+    max-width: calc((100% - 8rem) / 5);
+  }
+
+  .visual {
+    border-radius: 0;
+    padding: 0px;
+  }
+
+  .field {
+    border-radius: 0;
+  }
+
+  .ghost {
+    font-size: 4.5rem;
+  }
+}
+
+/* --- Large screens: hold the line, let negative space breathe --- */
+
+@media (min-width: 1500px) {
+  .grid {
+    gap: 2.5rem;
+  }
+
+  .piece {
+    flex-basis: calc((100% - 10rem) / 5);
+    max-width: calc((100% - 10rem) / 5);
+  }
+
+  .visual {
+    border-radius: 0;
+    padding: 0px;
+  }
+
+  .field {
+    border-radius: 0;
+  }
+}
+
+/* --- Photo: fills the field when the product has an image --- */
+
+.photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* --- Status line: loading / error / empty archive --- */
+
+.status {
+  font-family: var(--font-family);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+  padding: var(--space-xl) 0;
+  text-align: center;
+}
+
+/* --- Reduced motion: objects stay still --- */
+
+@media (prefers-reduced-motion: reduce) {
+  .visual,
+  .piece:hover .visual,
+  .piece:active .visual {
+    transform: none;
+    transition: none;
+  }
+}

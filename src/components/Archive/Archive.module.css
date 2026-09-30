@@ -1,0 +1,174 @@
+/* ============================================
+   DECA DREAM — Archive
+   Full decade line. Years with products navigate.
+   2025—26 ●   2026—27 ◐8%   2027—28 ○  ...  2034—35 ○
+   ============================================ */
+
+.archive {
+  width: 100vw;
+  position: relative;
+  z-index: 1;
+  left: 50%;
+  margin-left: -50vw;
+  padding: calc(var(--header-height) + 1rem) 0 var(--space-md);
+  overflow: hidden;
+}
+
+/* --- Decade line: every period visible, space-between --- */
+
+.line {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  padding: 0 var(--space-lg);
+}
+
+/* --- Period: button when it has products, quiet text when not --- */
+
+.period {
+  font-family: var(--font-family);
+  font-size: 0.5rem;
+  font-weight: 300;
+  letter-spacing: 0.03em;
+  color: var(--color-text);
+  flex: 0 0 auto;
+  line-height: 1;
+}
+
+button.period {
+  background: none;
+  border: none;
+  padding: var(--space-xs) 0;
+  transition: opacity var(--transition-fast);
+}
+
+button.period:hover {
+  opacity: 0.55;
+}
+
+button.period:focus-visible {
+  outline: 1px solid var(--color-text);
+  outline-offset: 4px;
+}
+
+.completed {
+  opacity: 1;
+}
+
+.active {
+  font-weight: 400;
+  opacity: 1;
+}
+
+.future {
+  opacity: 0.35;
+}
+
+/* --- Percent --- */
+
+.pct {
+  font-family: var(--font-family);
+  font-size: 0.6rem;
+  letter-spacing: 0.03em;
+  color: var(--color-text-muted);
+  margin-left: 0.15rem;
+}
+
+/* --- Chapters: visual timeline, same measure as the Shop grid --- */
+
+.chapters {
+  width: 100%;
+  max-width: 1480px;
+  min-width: 0;
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-md) var(--space-2xl);
+}
+
+.chapter {
+  min-width: 0;
+  scroll-margin-top: calc(var(--header-height) + 1rem);
+}
+
+.chapter + .chapter {
+  margin-top: var(--space-xl);
+}
+
+/* División DECA / JJ: línea fina que no toca los costados. */
+.divider {
+  height: 1px;
+  background: var(--color-border);
+  margin: var(--space-xl) var(--space-xl) 0;
+}
+
+.divider + .chapter {
+  margin-top: var(--space-xl);
+}
+
+/* --- Status line: loading / error --- */
+
+.status {
+  font-family: var(--font-family);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+  padding: var(--space-xl) 0;
+  text-align: center;
+}
+
+/* --- Mobile: 2 rows x 5 periods, no horizontal scroll --- */
+
+@media (max-width: 768px) {
+  .archive {
+    width: 100%;
+    left: auto;
+    margin-left: 0;
+    overflow: visible;
+    max-width: 100%;
+    padding: 0.1rem;
+  }
+
+  .line {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-rows: repeat(2, auto);
+    gap: var(--space-sm) 0;
+    align-items: center;
+    white-space: normal;
+    overflow: visible;
+    padding: 0;
+  }
+
+  .period {
+    min-width: 0;
+    white-space: nowrap;
+    font-size: 0.1rem;
+  }
+
+  .pct {
+    font-size: 0.1rem;
+    margin-left: 0.1rem;
+  }
+}
+
+/* --- Chapters responsive: same air as the Shop grid --- */
+
+@media (min-width: 768px) {
+  .chapters {
+    padding: var(--space-xl) var(--space-xl) var(--space-2xl);
+  }
+}
+
+@media (max-width: 767px) {
+  .chapters {
+    padding-left: var(--space-md);
+    padding-right: var(--space-md);
+  }
+}
