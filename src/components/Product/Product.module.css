@@ -1,0 +1,759 @@
+/* ============================================
+   DECAWEB — Product detail
+   Same visual language as the header:
+   Inter, off-white/black, thin borders,
+   generous spacing. No decoration.
+
+   FIXED viewport scene with gesture-driven
+   scrub: .product is the locked stage
+   (height 100dvh, overflow hidden — the
+   document never scrolls while mounted).
+   Wheel deltaY / vertical touch drag /
+   arrow keys accumulate into progress and
+   the photos travel through the center
+   stage; on release the scene snaps past
+   ~0.4 of a step or glides back. No tall
+   spacers, no sticky range, no page scroll.
+
+   Desktop (>=1024px): 3-column grid with two
+   equal 1fr side columns, so the center image
+   stays exactly centered in the viewport while
+   thumbs (left) and info + price (right) dock
+   to the outer edges at the same bottom line.
+
+   Mobile (<1024px): single column flow —
+   name, image, details, price, thumbnails.
+   ============================================ */
+
+/* --- Fixed stage: locked viewport, no page scroll --- */
+
+.product {
+  width: 100%;
+  min-width: 0;
+  max-width: 1480px;
+  margin: 0 auto;
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100dvh;
+  /* Locked: gestures scrub photos, never the page. Vertical travel is
+     clipped at the stage bounds (viewport bottom edge / below-header
+     top edge); horizontal escape stays impossible. */
+  overflow: hidden;
+  padding: calc(var(--header-height) + 0.75rem) var(--space-md) var(--space-md);
+  cursor: default;
+}
+
+.layout {
+  --panel-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  width: 100%;
+  min-width: 0;
+  max-width: 640px;
+  max-height: 100%;
+  margin: 0 auto;
+  /* Travel corridor: vertical overflow passes through to the stage
+     bounds so frames visibly cross; horizontal stays clipped. */
+  overflow-x: clip;
+  overflow-y: visible;
+}
+
+/* --- Name: highest hierarchy, first on mobile --- */
+
+.name {
+  font-family: var(--font-family);
+  font-size: 2.5rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.3;
+  color: var(--color-text);
+  margin: 0;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  /* Long names clip instead of growing the locked stage. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  order: 1;
+}
+
+.name:focus {
+  outline: none;
+}
+
+/* Nombre dentro del bloque concepto: solo móvil (el h1 superior se
+   oculta ahí y el nombre vive antes del concepto). */
+.nameInside {
+  display: block;
+  font-family: var(--font-family);
+  font-size: 1.15rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  color: var(--color-text);
+  margin: 0 0 2px;
+  overflow-wrap: break-word;
+}
+
+@media (max-width: 1023px) {
+  .name {
+    display: none;
+  }
+}
+
+/* Screen-reader hint for gesture scrub; never affects layout. */
+.stepHint {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --- Center: square 1:1 stage, image protagonist --- */
+
+.center {
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  max-width: 100%;
+  order: 2;
+  /* Lift the photo layer above the later column siblings (details/price/
+     thumbs) so a travelling frame visibly crosses them on the mobile
+     column. Paint order only; on desktop the grid areas never overlap.
+     Header (z-100) stays above. */
+  position: relative;
+  z-index: 2;
+}
+
+.field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Cuadrado 1:1 a todo el ancho, siempre entero y centrado. */
+  width: 100%;
+  min-width: 0;
+  margin: 0 auto;
+  aspect-ratio: 1 / 1;
+  /* The gesture-driven frames travel ±TRAVEL_PCT of this box (translateY
+     set per gesture frame from Product.tsx, parked fully off-stage): the
+     incoming frame first appears small at the stage edge (below the fixed
+     header when arriving from above, at the viewport bottom when arriving
+     from below) and the outgoing frame leaves fully off-stage, clipped by
+     .product. At rest the active img sits exactly inset:0 pixel-exact.
+     Absolute stacking means no layout shift of thumbs/info/price while
+     frames cross. */
+  overflow-x: clip;
+  overflow-y: visible;
+  background: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.ghost {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -52%);
+  font-family: var(--font-family);
+  font-weight: 200;
+  font-size: clamp(3rem, 14vw, 4.5rem);
+  letter-spacing: 0.04em;
+  line-height: 1;
+  color: rgba(17, 17, 17, 0.09);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Stacked gesture frames: ALL gallery photos stay mounted, positioned
+   purely by inline transform from the single progress function
+   (translate3d Y + scale + blur + opacity only). No keyframes — a small
+   gesture is always a small move and reversing runs the frames back
+   exactly. */
+.photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  transform-origin: center center;
+  will-change: transform, filter;
+  backface-visibility: hidden;
+}
+
+/* --- Panel de información: agrupa CONCEPTO + COLORES + PRECIO + WHATSAPP
+   en un solo bloque pegado abajo. El margin-top auto absorbe el espacio
+   libre de la columna y lo deja ARRIBA del bloque. Sin position absolute. */
+.infoPanel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  min-width: 0;
+  width: 100%;
+  margin-top: auto;
+  order: 3;
+}
+
+/* --- Details: bordered panel, quiet type --- */
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  padding: var(--space-md);
+  border: 1px solid rgba(17, 17, 17, 0.12);
+  border-radius: 2px;
+  background: none;
+  overflow: hidden;
+  order: 3;
+}
+
+.detail {
+  font-family: var(--font-family);
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+  overflow-wrap: break-word;
+}
+
+/* Etiqueta de cada bloque de información (Concepto / Colores / Precio / WhatsApp):
+   mismo lenguaje visual, sin tarjetas pesadas. */
+.blockLabel {
+  font-family: var(--font-family);
+  font-size: 0.6rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+}
+
+.description {
+  font-family: var(--font-family);
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+  margin: 4px 0 0;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  /* Clipped, never scrolling: long copy can't grow the locked stage. */
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* --- Price: independent system bar, same width as the panel --- */
+
+.price {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  min-width: 0;
+  width: 100%;
+  padding: 0.65rem var(--space-md);
+  border: 1px solid rgba(17, 17, 17, 0.12);
+  border-radius: 2px;
+  background: none;
+  order: 5;
+}
+
+/* --- Colores: bloque independiente, continuación del concepto --- */
+
+.colorsBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  width: 100%;
+  padding: var(--space-md);
+  border: 1px solid rgba(17, 17, 17, 0.12);
+  border-radius: 2px;
+  background: none;
+  order: 4;
+}
+
+.priceLabel {
+  font-family: var(--font-family);
+  font-size: 0.6rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+}
+
+.priceValue {
+  font-family: var(--font-family);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+/* --- Variants: small colored decagrams in DECA language --- */
+
+.variants {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  order: 5;
+}
+
+.variant,
+.variantSelected {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 3px;
+  background: none;
+  border: 1px solid rgba(17, 17, 17, 0.15);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.variant:hover {
+  border-color: rgba(17, 17, 17, 0.45);
+}
+
+.variantSelected {
+  border-color: var(--color-text);
+  cursor: default;
+}
+
+.variant:focus-visible,
+.variantSelected:focus-visible {
+  outline: 1px solid var(--color-text);
+  outline-offset: 2px;
+}
+
+.variantDot {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+}
+
+/* --- Palette: detected colors as one circle (primary = half) --- */
+
+.paletteCircle {
+  display: block;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 1px solid rgb(2, 2, 2);
+}
+
+/* --- WhatsApp: bloque compacto, sin tarjeta ni padding extra ---
+   El contenedor solo apila etiqueta + botón; el botón lleva su propio
+   padding pequeño para ser cómodo de tocar. */
+
+.whatsappBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  min-width: 0;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  order: 6;
+  /* Aire debajo del botón, igual que en la tira de selección. */
+  margin-bottom: var(--space-md);
+}
+
+.whatsappButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  width: 100%;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--color-text);
+  border-radius: 2px;
+  background: none;
+  color: var(--color-text);
+  font-family: var(--font-family);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.whatsappButton:hover {
+  background: var(--color-text);
+  color: var(--color-bg);
+}
+
+.whatsappButton:focus-visible {
+  outline: 1px solid var(--color-text);
+  outline-offset: 2px;
+}
+
+/* --- Thumbnails: horizontal, discreet, real photos. --- */
+
+/* --- Dots: un punto por foto, solo móvil --- */
+
+.dots {
+  display: none;
+}
+
+.dot,
+.dotActive {
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  line-height: 0;
+}
+
+.dot::before,
+.dotActive::before {
+  content: '';
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+}
+
+.dot::before {
+  border: 1px solid var(--color-text-dim);
+  background: none;
+}
+
+.dotActive::before {
+  border: 1px solid var(--color-text);
+  background: var(--color-text);
+}
+
+.dot:focus-visible,
+.dotActive:focus-visible {
+  outline: 1px solid var(--color-text);
+  outline-offset: 4px;
+}
+
+@media (max-width: 1023px) {
+  /* En móvil la tira se reemplaza por los puntos contadores. */
+  .thumbs {
+    display: none;
+  }
+
+  /* En móvil la página rueda nativa: el escenario deja de estar
+     bloqueado, sin scrolls internos ni solapados. */
+  .product {
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .layout {
+    height: auto;
+    max-height: none;
+  }
+
+  .center {
+    flex: none;
+  }
+
+  .dots {
+    flex: none;
+  }
+
+  .infoPanel {
+    flex: none;
+    min-height: 0;
+    margin-top: 0;
+    overflow: visible;
+  }
+
+  .dots {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 2px 0;
+    /* Subidos sobre la foto: flotan encima del borde inferior. */
+    position: relative;
+    z-index: 3;
+    margin-top: -52px;
+    margin-bottom: 18px;
+    min-height: 28px;
+  }
+}
+
+/* Pantallas cortas en móvil: el escenario está bloqueado a 100dvh y el
+   contenido se montaba (puntos encima del concepto). Se compacta para
+   que todo entre sin solaparse. */
+@media (max-width: 1023px) and (max-height: 720px) {
+  .dots {
+    padding: 6px 0 2px;
+    margin-bottom: 6px;
+    min-height: 24px;
+  }
+
+  .details,
+  .colorsBlock {
+    padding: 0.6rem var(--space-sm);
+  }
+
+  .infoPanel {
+    gap: var(--space-sm);
+  }
+}
+
+.thumbs {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  padding-bottom: var(--space-md);
+  order: 7;
+}
+
+.thumb,
+.thumbSelected {
+  flex: 0 0 auto;
+  width: 64px;
+  height: 64px;
+  padding: 0;
+  background: none;
+  border: 1px solid rgba(17, 17, 17, 0.12);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: border-color var(--transition-fast, 0.15s ease);
+}
+
+.thumb:hover {
+  border-color: rgba(17, 17, 17, 0.35);
+}
+
+.thumbSelected {
+  border-color: var(--color-text);
+}
+
+.thumb:focus-visible,
+.thumbSelected:focus-visible {
+  outline: 1px solid var(--color-text);
+  outline-offset: 2px;
+}
+
+.thumbPhoto {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* --- Móvil (<1024px): el carrusel viaja en HORIZONTAL con más
+   recorrido: se invierte el corredor (X visible, Y recortado) para
+   que los marcos crucen a los costados sin recorte prematuro. --- */
+
+@media (max-width: 1023px) {
+  .layout {
+    overflow-x: visible;
+    overflow-y: clip;
+  }
+
+  .field {
+    overflow-x: visible;
+    overflow-y: clip;
+  }
+
+  /* En móvil no hay indicador de selección: ni tira ni puntos. */
+  .thumbs {
+    display: none;
+  }
+}
+
+/* --- Desktop: viewport-centered image, docked sides --- */
+
+@media (min-width: 1024px) {
+  .product {
+    padding: calc(var(--header-height) + 1.5rem) var(--space-xl) var(--space-md);
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    /* La columna derecha es un solo bloque (info) con una fila flexible
+       vacía encima: todo el contenido queda pegado abajo, sin absolutes. */
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+      'name center .'
+      '. center .'
+      'thumbs center info';
+    /* stretch (not end): the center area spans all rows at full stage
+       height so place-self:center lands exactly in the viewport; side
+       cells keep their own align-self docking (thumbs bottom, info top). */
+    align-content: stretch;
+    align-items: start;
+    gap: var(--space-md) var(--space-xl);
+    max-width: none;
+    /* Locked stage: fixed viewport height minus header, clipped — the
+       scene never grows; travel is gesture-driven, not scroll-driven. */
+    height: calc(100dvh - var(--header-height) - 3rem);
+    min-height: calc(100dvh - var(--header-height) - 3rem);
+    max-height: calc(100dvh - var(--header-height) - 3rem);
+    /* Same travel corridor as the base layout: vertical visible so the
+       full-height cross is never cut at the stage border. */
+    overflow-x: clip;
+    overflow-y: visible;
+  }
+
+  .name {
+    grid-area: name;
+    display: -webkit-box;
+    justify-self: start;
+    width: min(var(--panel-width), 100%);
+    order: 0;
+  }
+
+  .nameInside {
+    display: none;
+  }
+
+  .center {
+    grid-area: center;
+    /* Exact viewport centering: symmetric 1fr side columns keep this
+       horizontally centered; place-self centers it in the full-height
+       stage regardless of side-column content length. */
+    place-self: center;
+    align-self: center;
+    justify-self: center;
+    min-height: 0;
+    width: min(48vw, 64dvh, 640px);
+    order: 0;
+  }
+
+  .field {
+    width: 100%;
+    max-height: 64dvh;
+  }
+
+  .infoPanel {
+    grid-area: info;
+    align-self: end;
+    justify-self: end;
+    width: min(var(--panel-width), 100%);
+    order: 0;
+    /* En grid el empuje lo hace la fila flexible; el margen queda en 0. */
+    margin-top: 0;
+  }
+
+  .description {
+    -webkit-line-clamp: 6;
+  }
+
+  .thumbs {
+    grid-area: thumbs;
+    align-self: end;
+    justify-self: start;
+    max-width: 100%;
+    flex-wrap: wrap;
+    overflow-x: visible;
+    order: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .photo {
+    animation: none;
+  }
+
+  .thumb,
+  .thumbSelected {
+    transition: none;
+  }
+}
+
+/* --- Mobile (<=768px): fit + tap targets, same design ---
+   Locked stage: no scroll allowed, so shrink type/photo/air;
+   WhatsApp >=44px and variant dots >=40px for touch. */
+
+@media (max-width: 768px) {
+  .product {
+    padding: calc(var(--header-height) + 0.5rem) var(--space-sm) var(--space-sm);
+    overflow-x: clip;
+  }
+
+  .layout {
+    gap: var(--space-sm);
+    max-width: 100%;
+  }
+
+  .name {
+    font-size: 1.6rem;
+    letter-spacing: 0.06em;
+  }
+
+  .field {
+    width: 100%;
+  }
+
+  .infoPanel {
+    gap: var(--space-sm);
+  }
+
+  .details,
+  .colorsBlock {
+    padding: var(--space-sm);
+  }
+
+  .description {
+    -webkit-line-clamp: 3;
+  }
+
+  .price {
+    padding: 0.6rem var(--space-sm);
+  }
+
+  .priceValue {
+    min-width: 0;
+    overflow-wrap: break-word;
+  }
+
+  .variant,
+  .variantSelected {
+    width: 40px;
+    height: 40px;
+  }
+
+  .whatsappButton {
+    min-height: 44px;
+    padding: 0.7rem 1rem;
+  }
+
+  .thumb,
+  .thumbSelected {
+    width: 56px;
+    height: 56px;
+  }
+}

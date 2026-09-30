@@ -1,0 +1,1023 @@
+/* ============================================
+   DECA — ADMIN
+   Internal tool. DECA OS language: black/white,
+   clean type, air. No dashboards, no charts.
+   ============================================ */
+
+.admin {
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: calc(var(--header-height) + var(--space-lg)) var(--space-lg)
+    var(--space-lg);
+  color: var(--color-text);
+}
+
+/* --- Fixed admin header (same language as the site header) --- */
+
+.adminHeader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--header-height);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: 0 var(--space-sm);
+  background: var(--color-surface);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.adminHeader .kicker {
+  margin: 0;
+  flex: none;
+}
+
+.adminHeader .heading {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.1;
+  flex: 1 1 auto;
+  min-width: 0;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.adminHeader .ghost {
+  padding: 0.45rem 0.9rem;
+  flex: none;
+}
+
+.kicker {
+  font-family: var(--font-family);
+  font-size: 0.6rem;
+  letter-spacing: 0.22em;
+  color: var(--color-text-muted);
+  margin-bottom: 0;
+  padding: 1rem;
+  flex: none;
+}
+
+.heading {
+  font-size: 1.4rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  margin-bottom: var(--space-lg);
+}
+
+.topbar {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-md);
+  flex: none;
+  min-height: auto;
+}
+
+.topbar .heading {
+  margin-bottom: 0;
+  font-size: 1.1rem;
+  line-height: 1.1;
+}
+
+.body {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+.code {
+  font-family: ui-monospace, monospace;
+  font-size: 0.75rem;
+  line-height: 1.8;
+  background: var(--color-overlay);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: var(--space-md);
+  margin-top: var(--space-md);
+  white-space: pre-wrap;
+}
+
+/* --- Forms --- */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-top: var(--space-lg);
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin: 0;
+  font-family: var(--font-family);
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  color: var(--color-text-muted);
+}
+
+.input {
+  font-family: var(--font-family);
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+  color: var(--color-text);
+  background: #ffffff;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 12px;
+  padding: 0.7rem 0.9rem;
+  outline: none;
+}
+
+.input:focus {
+  border-color: var(--color-text);
+}
+
+.error {
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: #b00020;
+}
+
+/* --- Buttons --- */
+
+.primary {
+  font-family: var(--font-family);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #ffffff;
+  background: #111111;
+  border: 1px solid #111111;
+  border-radius: 999px;
+  padding: 0.8rem 1.4rem;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.primary:disabled {
+  opacity: 0.5;
+}
+
+.ghost {
+  font-family: var(--font-family);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 0.8rem 1.4rem;
+  cursor: pointer;
+}
+
+.small {
+  font-family: var(--font-family);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text);
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+}
+
+.danger {
+  font-family: var(--font-family);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #b00020;
+  background: none;
+  border: 1px solid rgba(176, 0, 32, 0.35);
+  border-radius: 999px;
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+}
+
+.toggle {
+  font-family: var(--font-family);
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  color: var(--color-text);
+  background: #ffffff;
+  border: 1px solid var(--color-text);
+  border-radius: 999px;
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+/* Marcado del toggle activo (categoría elegida, visible ON). */
+.toggle[aria-pressed='true'] {
+  color: #ffffff;
+  background: #111111;
+}
+
+/* --- Product list --- */
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 0;
+  border-top: 1px solid var(--color-border);
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 4px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid var(--color-border);
+  max-width: 100%;
+}
+
+.thumb {
+  width: 56px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 14px;
+  background: var(--color-overlay);
+  flex: none;
+}
+
+.thumbEmpty {
+  width: 56px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: var(--color-overlay);
+  color: var(--color-text-dim);
+  flex: none;
+}
+
+.rowInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.rowName {
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.badgeOn,
+.badgeOff {
+  font-family: var(--font-family);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.badgeOn {
+  color: var(--color-text-muted);
+}
+
+.badgeOff {
+  color: var(--color-text-dim);
+}
+
+.rowActions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* --- Two-column layout: list left, editor right --- */
+
+.content {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: 0.5rem;
+  align-items: stretch;
+  margin-top: 0;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.listPane {
+  min-width: 0;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  overflow: hidden;
+}
+
+.listPane .heading,
+.listPane .body,
+.listPane .error {
+  margin: 0;
+}
+
+/* --- Editor pane (docked right, not floating) --- */
+
+.editorPane {
+  min-width: 0;
+  max-width: 100%;
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  overflow: hidden !important;
+  overflow-y: hidden !important;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg);
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.sheet {
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden !important;
+  overflow-y: hidden !important;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.sheet .heading,
+.sheet .body,
+.sheet .error,
+.sheet p {
+  margin: 0;
+}
+
+/* Compact form title: reuse .heading without the big bottom margin. */
+.sheet .heading {
+  font-size: 1rem;
+  line-height: 1.1;
+  margin-bottom: 0;
+}
+
+.sheet .input {
+  padding: 0.35rem 0.6rem;
+  max-width: 100%;
+}
+
+.sheet textarea.input {
+  min-height: 1.8rem;
+  max-height: 2.6rem;
+  resize: none;
+  line-height: 1.4;
+}
+
+.sheet .body {
+  line-height: 1.3;
+  font-size: 0.78rem;
+}
+
+.sheet .inline {
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.sheet .primary,
+.sheet .ghost {
+  padding: 0.45rem 0.9rem;
+}
+
+.sheet .toggle {
+  padding: 0.4rem 0.9rem;
+  font-size: 0.65rem;
+}
+
+/* Form in two equal columns: photos + name + price + period left,
+   detected colors + concept + group + visible + actions right. */
+.sheetGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  min-height: 0;
+  overflow: hidden;
+  margin: 0;
+}
+
+.sheetCol {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  margin: 0;
+}
+
+.sheetCol > div {
+  margin: 0;
+}
+
+/* "Productos" title docked above the list (same .heading class). */
+.listPane .heading {
+  font-size: 1.1rem;
+  line-height: 1.1;
+  margin: 0;
+  flex: none;
+  text-align: left;
+}
+
+@media (max-width: 900px) {
+  /* En móvil el alto fijo colapsa el contenido: flujo normal de página
+     con scroll nativo, sin recortes. Solo desktop queda bloqueado.
+     El clip horizontal evita que la página se salga hacia la derecha. */
+  .admin {
+    height: auto;
+    max-height: none;
+    overflow: visible;
+    overflow-x: clip;
+    display: block;
+  }
+
+  /* Un solo scroll en móvil: todo el contenido rueda junto; las barras
+     se ocultan pero el gesto sigue funcionando. */
+  .content {
+    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    overflow: visible;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .listPane,
+  .editorPane,
+  .sheet,
+  .sheetGrid,
+  .sheetCol {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .row {
+    max-width: 100%;
+  }
+
+  .rowInfo {
+    min-width: 0;
+  }
+
+  .content::-webkit-scrollbar {
+    display: none;
+  }
+
+  .editorPane {
+    order: -1;
+    flex: none;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+    padding: 0.75rem;
+  }
+
+  .listPane {
+    flex: none;
+    min-height: 0;
+  }
+
+  .list {
+    max-height: none;
+    overflow: visible;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .list::-webkit-scrollbar,
+  .editorPane::-webkit-scrollbar,
+  .photoGrid::-webkit-scrollbar,
+  .detectedList::-webkit-scrollbar {
+    display: none;
+  }
+
+  .photoGrid,
+  .detectedList {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .drop {
+    min-height: 48px;
+  }
+
+  .sheet .input {
+    font-size: 16px;
+  }
+
+  .photoGrid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.4rem;
+  }
+
+  .sheet .inline {
+    gap: 0.5rem;
+  }
+
+  .sheet .inline .label {
+    min-width: 0;
+  }
+
+  .sheetGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .sheet .primary,
+  .sheet .ghost {
+    flex: 1 1 auto;
+    align-self: stretch;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  /* --- Mobile gaps: header fit, row wrap, 40px taps, no iOS zoom --- */
+
+  .adminHeader {
+    gap: var(--space-sm);
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .adminHeader .kicker {
+    padding-left: 0;
+    padding-right: 0;
+    font-size: 0.55rem;
+    letter-spacing: 0.12em;
+    white-space: nowrap;
+  }
+
+  .adminHeader > div {
+    display: flex;
+    gap: 0.25rem;
+    min-width: 0;
+    flex: none;
+  }
+
+  .adminHeader .ghost {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.6rem;
+    white-space: nowrap;
+    flex: none;
+  }
+
+  .adminHeader .small {
+    padding: 0.35rem 0.5rem;
+    font-size: 0.55rem;
+    white-space: nowrap;
+  }
+
+  .adminHeader .ghost,
+  .adminHeader .small {
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .row {
+    flex-wrap: wrap;
+  }
+
+  .rowInfo {
+    flex: 1 1 140px;
+  }
+
+  .rowActions {
+    flex: 1 1 100%;
+    justify-content: flex-start;
+  }
+
+  .rowActions .small,
+  .rowActions .danger {
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .input,
+  .detectedName,
+  .detectedHex {
+    font-size: 16px;
+  }
+
+  .detectedRow,
+  .detectedInfo {
+    min-width: 0;
+  }
+
+  .detectedName,
+  .detectedHex {
+    max-width: 100%;
+  }
+
+  /* Editor + analytics ruedan con el scroll único del contenido. */
+  .editorPane {
+    overflow: visible !important;
+  }
+
+  .sheet {
+    overflow: visible !important;
+    overflow-y: visible !important;
+  }
+
+  /* AnalyticsPanel (inline styles): clip + wrap, never push x. */
+  .admin [aria-label='Deca Analytics'] {
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
+  .admin [aria-label='Deca Analytics'] p,
+  .admin [aria-label='Deca Analytics'] span {
+    overflow-wrap: break-word;
+    min-width: 0;
+  }
+}
+
+/* Sin fallback con scroll: el editor nunca scrollea; se compacta en su lugar. */
+
+.drop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  max-width: 100%;
+  border: 1px dashed var(--color-border-strong);
+  border-radius: 16px;
+  padding: 0.35rem 0.7rem;
+  cursor: pointer;
+  text-align: center;
+}
+
+.drop .body {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.dropOver {
+  border-color: var(--color-text);
+  background: var(--color-overlay);
+}
+
+.dropHasPhotos {
+  flex-direction: column;
+  align-items: stretch;
+  cursor: pointer;
+}
+
+.dropHasPhotos .photoGrid {
+  max-width: 100%;
+  overflow: visible;
+}
+
+.preview {
+  width: 100%;
+  max-height: 280px;
+  object-fit: contain;
+  border-radius: 12px;
+}
+
+/* --- Multi-photo gallery (1–5) --- */
+
+.photoGrid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.4rem;
+  max-height: none;
+  overflow: visible;
+  min-height: 0;
+  margin: 0;
+}
+
+.photoCell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 0.2rem;
+  background: #ffffff;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.photoImg {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 8px;
+  background: var(--color-overlay);
+}
+
+.photoIndex {
+  font-family: var(--font-family);
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.photoActions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  max-width: 100%;
+  margin: 0;
+}
+
+.photoCell .small {
+  padding: 0.25rem 0.2rem;
+  font-size: 0.55rem;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: none;
+  min-width: 0;
+  line-height: 1.2;
+}
+
+.inline {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  margin: 0;
+}
+
+.inline .label {
+  flex: 1;
+  min-width: 140px;
+}
+
+/* --- Color presets + group variants (additive, no restyle) --- */
+
+.swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.swatch,
+.swatchSelected {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px;
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.swatch:hover {
+  border-color: var(--color-text);
+}
+
+.swatchSelected {
+  border-color: var(--color-text);
+  box-shadow: inset 0 0 0 1px var(--color-text);
+}
+
+.swatch:focus-visible,
+.swatchSelected:focus-visible {
+  outline: 1px solid var(--color-text);
+  outline-offset: 2px;
+}
+
+.variantRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 0;
+}
+
+.variantChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* --- Detected colors (auto palette from the primary photo) --- */
+
+/* Aire extra solo para COLORES DETECTADOS: 0.75rem arriba para despegar
+   de las fotos sin romper el ritmo 0.5rem ni scrollear el form. */
+.colorsLabel {
+  margin-top: 0.75rem;
+}
+
+.detectedList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 12rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+  overscroll-behavior: contain;
+  padding-right: 4px;
+  margin: 0;
+}
+
+.detectedRow {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  margin: 0;
+}
+
+.detectedSwatch {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  border: 1px solid var(--color-border-strong);
+}
+
+.detectedInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+}
+
+.detectedTop {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.detectedName {
+  font-family: var(--font-family);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text);
+  background: none;
+  border: none;
+  border-bottom: 1px solid transparent;
+  padding: 0.1rem 0;
+  min-width: 0;
+  flex: 0 1 auto;
+}
+
+.detectedName:hover {
+  border-bottom-color: var(--color-border);
+}
+
+.detectedName:focus {
+  outline: none;
+  border-bottom-color: var(--color-text);
+}
+
+.primaryBadge {
+  font-family: var(--font-family);
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  color: #ffffff;
+  background: #111111;
+  border-radius: 999px;
+  padding: 0.25rem 0.6rem;
+}
+
+.detectedBar {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(17, 17, 17, 0.08);
+  overflow: hidden;
+}
+
+.detectedFill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+}
+
+.detectedActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 0;
+}
+
+.detectedHex {
+  font-family: var(--font-family);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 0.3rem 0.7rem;
+  width: 6.5rem;
+}
+
+.detectedHex:focus {
+  outline: none;
+  border-color: var(--color-text);
+  color: var(--color-text);
+}
+
+/* Selector visual de color (popup del navegador, no lista visible). */
+.colorPicker {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border-strong);
+  padding: 0;
+  background: none;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+.colorPicker::-webkit-color-swatch-wrapper {
+  padding: 2px;
+}
+
+.colorPicker::-webkit-color-swatch {
+  border: none;
+  border-radius: 999px;
+}
+
+.colorPicker::-moz-color-swatch {
+  border: none;
+  border-radius: 999px;
+}
+
+/* Una fila de presets por color: corrección de un toque. */
+.presetRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  max-height: none;
+  overflow: visible;
+  margin: 0;
+}
+
+.presetDot {
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border-strong);
+  padding: 0;
+  cursor: pointer;
+}

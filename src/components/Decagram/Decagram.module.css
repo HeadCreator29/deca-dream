@@ -1,0 +1,90 @@
+/* ============================================
+   DECA DREAM — Decagram (10-pointed star)
+   Brand mark + toggle button for living background
+   ============================================ */
+
+.decagram {
+  display: inline-block;
+  flex-shrink: 0;
+  transition:
+    transform var(--transition-fast),
+    opacity var(--transition-fast);
+  cursor: default;
+}
+
+.decagram.button {
+  cursor: pointer;
+  padding: 3px;
+  border-radius: 50%;
+  transition:
+    background-color var(--transition-fast),
+    transform var(--transition-fast),
+    opacity var(--transition-fast);
+}
+
+.decagram.button:hover {
+  background-color: rgba(17, 17, 17, 0.08);
+  transform: scale(1.1);
+}
+
+.decagram.button:active {
+  transform: scale(0.95);
+}
+
+.decagram.button:focus {
+  outline: none;
+}
+
+/* --- States --- */
+
+.filled {
+  fill: var(--color-text);
+  stroke: none;
+}
+
+.outline {
+  fill: none;
+  stroke: var(--color-text);
+  stroke-width: 1;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.inactive .outline {
+  opacity: 0.5;
+}
+
+.glow {
+  fill: var(--color-text);
+  stroke: none;
+  opacity: 0.4;
+  animation: decagramPulse 3s ease-in-out infinite;
+}
+
+@keyframes decagramPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+/* --- Sizes --- */
+
+.decagram:not(.button) {
+  width: 1em;
+  height: 1em;
+}
+
+/* --- Reduced motion --- */
+
+@media (prefers-reduced-motion: reduce) {
+  .decagram,
+  .decagram.button,
+  .glow {
+    animation: none;
+    transition: none;
+  }
+
+  .decagram.button:hover {
+    transform: none;
+    background-color: transparent;
+  }
+}

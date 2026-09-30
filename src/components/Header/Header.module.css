@@ -1,0 +1,265 @@
+/* ============================================
+   DECA DREAM — Header
+   Fixed, discreet, premium top bar
+   ============================================ */
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--header-height);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-lg);
+  background: var(--color-surface);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  cursor: default;
+}
+
+@media (max-width: 767px) {
+  .header {
+    padding: 0 var(--space-md);
+  }
+
+  .rightGroup {
+    gap: var(--space-md);
+  }
+}
+
+/* --- Compact screens: one line, shrinks proportionally to fit --- */
+
+@media (max-width: 1023px) {
+  .header {
+    padding: 0 var(--space-sm);
+  }
+
+  .brandName {
+    font-size: 0.6rem;
+  }
+
+  .rightGroup {
+    gap: var(--space-sm);
+  }
+
+  .indicator {
+    font-size: 0.5rem;
+  }
+
+  .timeline {
+    flex-wrap: nowrap;
+    justify-content: center;
+    white-space: nowrap;
+    overflow: hidden;
+    gap: 0 0.35em;
+    padding: 0;
+    /* Exact-fit: all 10 periods share one line, shrinking before wrapping. */
+    font-size: min(0.55rem, calc((100vw - 10.5rem) / 54));
+  }
+
+  .period {
+    font-size: 1em;
+  }
+
+  .pct {
+    font-size: 0.85em;
+    margin-left: 0.15em;
+  }
+}
+
+/* --- Left: Brand --- */
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: default;
+}
+
+/* --- Back: same slot, measure and type as the brand --- */
+
+.brandButton {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* --- Back arrow: same type as the brand, tight box so flex centers it --- */
+
+.backArrow {
+  font-family: var(--font-family);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1;
+  color: var(--color-text);
+  /* Align Unicode arrow with uppercase text baseline */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* Unicode arrow sits lower - nudge up to match cap height */
+  transform: translateY(-0.12em);
+}
+
+.brandName {
+  font-family: var(--font-family);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text);
+}
+
+.symbol {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Decagram SVG handles its own size via size prop */
+  color: var(--color-text);
+  line-height: 1;
+  cursor: default;
+}
+
+.symbol :global(svg) {
+  display: block;
+}
+
+/* --- Center timeline: the decade line, integrated --- */
+
+.timeline {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0 var(--space-md);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.period {
+  font-family: var(--font-family);
+  font-size: 0.6rem;
+  font-weight: 300;
+  letter-spacing: 0.03em;
+  color: var(--color-text);
+  flex: 0 0 auto;
+  line-height: 1;
+}
+
+button.period {
+  background: none;
+  border: none;
+  padding: var(--space-xs) 0;
+  cursor: pointer;
+  transition: opacity var(--transition-fast);
+}
+
+button.period:hover {
+  opacity: 0.55;
+}
+
+button.period:focus-visible {
+  outline: 1px solid var(--color-text);
+  outline-offset: 4px;
+}
+
+.completed {
+  opacity: 1;
+}
+
+.active {
+  font-weight: 400;
+  opacity: 1;
+}
+
+.future {
+  opacity: 0.35;
+}
+
+.pct {
+  font-family: var(--font-family);
+  font-size: 0.5rem;
+  letter-spacing: 0.03em;
+  color: var(--color-text-muted);
+  margin-left: 0.15rem;
+}
+
+/* --- Right side group --- */
+
+.rightGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+/* --- RD$ Indicator --- */
+
+.indicator {
+  font-family: var(--font-family);
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+  cursor: default;
+}
+
+/* --- Phones (≤768px): force exactly 2 rows of 5, fluid type that fits ---
+   NOTE: this block must stay last in the file — later source order is
+   what lets it override the base rules above. */
+
+@media (max-width: 768px) {
+  .header {
+    padding: 0 var(--space-sm);
+  }
+
+  .brandName {
+    font-size: 0.6rem;
+  }
+
+  .rightGroup {
+    gap: var(--space-sm);
+  }
+
+  .indicator {
+    display: none;
+  }
+
+  .timeline {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-rows: repeat(2, auto);
+    gap: 0.01rem 0.01rem;
+    justify-items: center;
+    align-items: center;
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+    overflow: visible;
+    white-space: normal;
+    font-size: min(11px, calc((100vw - 14rem) / 32));
+  }
+
+  .period {
+    min-width: 0;
+    font-size: 1em;
+    line-height: 1.6;
+    white-space: nowrap;
+  }
+
+  button.period {
+    padding: 0;
+  }
+
+  .pct {
+    font-size: 0.85em;
+    margin-left: 0.12em;
+  }
+}

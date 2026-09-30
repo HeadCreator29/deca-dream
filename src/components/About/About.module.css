@@ -1,0 +1,82 @@
+/* ============================================
+   DECA DREAM — About
+   Extremely minimal. Centered vertical stack.
+   One decade. One dreamer. One legacy.
+   ============================================ */
+
+.about {
+  width: 100%;
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2xl) var(--space-lg);
+  cursor: default;
+  position: relative;
+  z-index: 1;
+}
+
+/* --- Title --- */
+
+.title {
+  font-family: var(--font-family);
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  font-weight: 200;
+  letter-spacing: 0.1em;
+  color: var(--color-text);
+  text-align: center;
+  margin: 0;
+}
+
+/* --- Date Range --- */
+
+.dates {
+  font-family: var(--font-family);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  color: var(--color-text-muted);
+  margin-top: var(--space-md);
+}
+
+/* --- Description --- */
+
+.description {
+  font-family: var(--font-family);
+  font-size: 0.85rem;
+  line-height: 1.8;
+  color: var(--color-text-muted);
+  text-align: center;
+  max-width: 400px;
+  margin-top: var(--space-lg);
+}
+
+/* --- Location --- */
+
+.location {
+  font-family: var(--font-family);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  color: var(--color-text-dim);
+  text-align: center;
+  margin-top: var(--space-xl);
+  line-height: 1.8;
+}
+
+/* ============================================
+   Responsive — Mobile
+   ============================================ */
+
+@media (max-width: 767px) {
+  .about {
+    padding: var(--space-xl) var(--space-md);
+  }
+
+  .title {
+    font-size: clamp(1.2rem, 8vw, 2rem);
+  }
+
+  .description {
+    font-size: 0.8rem;
+  }
+}

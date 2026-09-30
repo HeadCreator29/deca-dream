@@ -1,0 +1,83 @@
+/* ============================================
+   DECA DREAM — DecagramBackdrop
+   .decagramMotion = movement only (driven by JS)
+   .mark = appearance + centering only
+   ============================================ */
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* --- MOVEMENT LAYER: full viewport, transform driven by JS --- */
+
+.decagramMotion {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  will-change: transform;
+  /* transform is applied via requestAnimationFrame in DecagramBackdrop.tsx */
+}
+
+/* --- THE MARK: living decagram, soft organic presence --- */
+
+.mark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 160vmin;
+  height: 160vmin;
+
+  opacity: 0.66;
+  filter: blur(33px);
+
+  transform: translate(-50%, -50%);
+}
+
+/* Grain/noise overlay - subtle film grain texture */
+.mark::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.12;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  border-radius: 50%;
+}
+
+/* --- Mobile: reduced blur so decagram shape stays visible --- */
+
+@media (max-width: 768px) {
+  .mark {
+    width: 140vmin;
+    height: 140vmin;
+    filter: blur(10px);
+  }
+
+  .mark::before {
+    opacity: 0.1;
+  }
+}
+
+/* --- Reduced motion: the shadow stays still --- */
+
+@media (prefers-reduced-motion: reduce) {
+  .decagramMotion {
+    transform: none !important;
+  }
+
+  .mark {
+    filter: blur(24px);
+  }
+
+  @media (max-width: 768px) {
+    .mark {
+      filter: blur(10px);
+    }
+  }
+}
