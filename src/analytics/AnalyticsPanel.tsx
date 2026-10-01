@@ -14,6 +14,12 @@ interface VisitRow {
   last_seen_at: string
 }
 
+interface ClickRow {
+  product_id: string
+  device_type: string | null
+  created_at: string
+}
+
 type Range = 7 | 30
 
 // Polling de respaldo: nunca menor a 30s.
@@ -77,6 +83,8 @@ interface Props {
 
 export default function AnalyticsPanel({ products }: Props) {
   const [rows, setRows] = useState<VisitRow[]>([])
+  const [clicks, setClicks] = useState<ClickRow[]>([])
+  const [clicksReady, setClicksReady] = useState(false)
   const [total, setTotal] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -109,6 +117,36 @@ export default function AnalyticsPanel({ products }: Props) {
         if (row) clean.push(row)
       }
       setRows(clean)
+      // Clics por producto: tabla nueva e inmutable (un insert por
+      // clic). Si la migración aún no corrió, las visitas siguen
+      // funcionando y se muestra el aviso en la sección de clics.
+      try {
+        const clicksRes = await supabase
+          .from('analytics_product_clicks')
+          .select('product_id,device_type,created_at')
+          .gte('created_at', since)
+          .order('created_at', { ascending: false })
+          .limit(ROW_LIMIT)
+        if (clicksRes.error) throw clicksRes.error
+        const cleanClicks: ClickRow[] = []
+        for (const raw of clicksRes.data ?? []) {
+          if (typeof raw !== 'object' || raw === null) continue
+          const r = raw as Record<string, unknown>
+          const pid = asText(r.product_id)
+          const created = asText(r.created_at)
+          if (!pid || !created) continue
+          cleanClicks.push({
+            product_id: pid,
+            device_type: asText(r.device_type),
+            created_at: created,
+          })
+        }
+        setClicks(cleanClicks)
+        setClicksReady(true)
+      } catch {
+        setClicks([])
+        setClicksReady(false)
+      }
       setTotal(typeof countRes.count === 'number' ? countRes.count : clean.length)
       setUpdatedAt(new Date())
       setError(null)
@@ -180,6 +218,25 @@ export default function AnalyticsPanel({ products }: Props) {
       .map(([id, name]) => ({ id, name, count: byProduct.get(id) ?? 0 }))
       .sort((a, b) => b.count - a.count)
 
+    // Clics reales en la página principal: un evento por clic, sin
+    // importar el dispositivo ni si el usuario volvió al home.
+    const clickCounts = new Map<string, number>()
+    const clickDevices = new Map<string, number>()
+    for (const c of clicks) {
+      if (known.has(c.product_id)) {
+        clickCounts.set(c.product_id, (clickCounts.get(c.product_id) ?? 0) + 1)
+      }
+      const label = deviceLabel(c.device_type)
+      clickDevices.set(label, (clickDevices.get(label) ?? 0) + 1)
+    }
+    const topClicked = [...known.entries()]
+      .map(([id, name]) => ({ id, name, count: clickCounts.get(id) ?? 0 }))
+      .sort((a, b) => b.count - a.count)
+    const clickDeviceLine = [...clickDevices.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .map(([label, count]) => `${label} ${count}`)
+      .join(' · ')
+
     const bySource = new Map<string, number>()
     for (const r of rows) {
       const label = sourceLabel(r)
@@ -216,12 +273,14 @@ export default function AnalyticsPanel({ products }: Props) {
       last7,
       last30: rows.length,
       topProducts,
+      topClicked,
+      clickDeviceLine,
       sources,
       devices,
       buckets,
       maxBucket,
     }
-  }, [rows, products, range])
+  }, [rows, clicks, products, range])
 
   const cardStyle: React.CSSProperties = {
     border: '1px solid var(--color-border)',
@@ -362,6 +421,33 @@ export default function AnalyticsPanel({ products }: Props) {
               </div>
             ))}
           </div>
+
+          <p className={styles.label}>CLICS POR PRODUCTO</p>
+          {!clicksReady ? (
+            <p className={styles.body}>
+              Pendiente: ejecutá supabase/migration_product_clicks.sql en el
+              SQL Editor para activar el conteo de clics.
+            </p>
+          ) : stats.topClicked.every((p) => p.count === 0) ? (
+            <p className={styles.body}>Todavía no hay clics en productos.</p>
+          ) : (
+            <>
+              {stats.clickDeviceLine && (
+                <p className={styles.body} style={{ margin: '0.15rem 0' }}>
+                  Por dispositivo: {stats.clickDeviceLine}
+                </p>
+              )}
+              {stats.topClicked.map((p) => (
+                <p
+                  key={p.id}
+                  className={styles.body}
+                  style={{ margin: '0.15rem 0', overflowWrap: 'break-word' }}
+                >
+                  {p.name} — {p.count} {p.count === 1 ? 'clic' : 'clics'}
+                </p>
+              ))}
+            </>
+          )}
 
           <p className={styles.label}>PRODUCTOS MÁS VISTOS</p>
           {stats.topProducts.length === 0 ? (

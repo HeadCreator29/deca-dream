@@ -238,3 +238,26 @@ export function updateAnalyticsPage(page: AnalyticsPage): void {
   if (!sessionId || !recordedSessions.has(sessionId)) return
   void touchVisit(page)
 }
+
+// Clic en un producto de la página principal: UN insert por clic,
+// inmutable. No depende del timing del insert inicial de la visita
+// ni lo borra volver al home — funciona igual en móvil y desktop.
+export async function trackProductClick(productId: string): Promise<void> {
+  try {
+    if (!supabase || isAdminRoute()) return
+    const id = (productId ?? '').trim().slice(0, 200)
+    if (!id) return
+    const visitorId = getVisitorId()
+    const sessionId = getSessionId()
+    if (!visitorId || !sessionId) return
+    await supabase.from('analytics_product_clicks').insert({
+      session_id: sessionId,
+      visitor_id: visitorId,
+      product_id: id,
+      device_type: getDeviceType(),
+    })
+  } catch {
+    // Silencioso: la analítica jamás rompe la página.
+    // Si la migración aún no corrió, la tabla no existe y se ignora.
+  }
+}

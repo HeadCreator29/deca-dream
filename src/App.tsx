@@ -6,6 +6,7 @@ import { products } from './data/products'
 import { archivePeriods } from './data/archive'
 import { useProducts, getVariants } from './hooks/useProducts'
 import { usePageTracking } from './analytics/useAnalytics'
+import { trackProductClick } from './analytics/tracker'
 import Footer from './components/Footer/Footer'
 import DecagramBackdrop from './components/DecagramBackdrop/DecagramBackdrop'
 import Admin from './components/Admin/Admin'
@@ -48,6 +49,9 @@ function App() {
     const inGrid = items.some((item) => item.id === productId)
     const inLocal = products.some((p) => p.id === productId)
     if (!inGrid && !inLocal) return
+    // Un insert inmutable por clic: no depende del estado de la
+    // visita ni del dispositivo (móvil/tablet/desktop igual).
+    void trackProductClick(productId)
     setSelectedProductId(productId)
     setView('product')
     window.scrollTo({ top: 0, behavior: 'auto' })
